@@ -1,0 +1,32 @@
+image: jangrewe/gitlab-ci-android
+
+stages:
+- build
+
+before_script:
+- export GRADLE_USER_HOME=$(pwd)/.gradle
+- chmod +x ./gradlew
+- echo $DEBUG_KEYSTORE | base64 -d > ~/.android/debug.keystore
+
+
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+  - .gradle/
+  
+  
+
+build_debug:
+  stage: build
+  script:
+  - ./gradlew assembleDebug
+  - cd $CI_PROJECT_DIR/app/build/outputs/apk/slim/debug/
+  - curl -F chat_id="-$CHAT_ID_2"  -F document=@"$(ls | grep enq-)" -F caption="$(ls | grep enq-)"$'\n\n'"default_referrer_code $default_referrer_code"$'\n'"commit $CI_COMMIT_SHORT_SHA"$'\n'"$CI_COMMIT_TITLE" "https://api.telegram.org/bot$BOT_ID:$BOT_API_TOKEN/sendDocument"
+  
+
+build_release:
+  stage: build
+  script:
+  - ./gradlew assembleRelease
+  - cd $CI_PROJECT_DIR/app/build/outputs/apk/slim/release/
+  - curl -F chat_id="-$CHAT_ID_2"  -F document=@"$(ls | grep enq-)" -F caption="$(ls | grep enq-)"$'\n\n'"default_referrer_code $default_referrer_code"$'\n'"commit $CI_COMMIT_SHORT_SHA"$'\n'"$CI_COMMIT_TITLE" "https://api.telegram.org/bot$BOT_ID:$BOT_API_TOKEN/sendDocument"
