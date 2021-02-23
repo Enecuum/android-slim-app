@@ -8,9 +8,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.enecuum.app.BuildConfig
@@ -101,6 +104,7 @@ class HomeFragment : Fragment(), CoroutineScope {
                 viewModel.getDetailedBalance()
                 enableGetBIT()
                 setupStartMiningButton()
+                enableTestLibrary()
             }
         }
     }
@@ -144,12 +148,31 @@ class HomeFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun enableSpinner() {
+        var listOfItems = arrayOf("Method 1", "Method 2", "Method 3")
+        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, listOfItems)
+
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        selectMethod!!.adapter = arrayAdapter
+        selectMethod.isEnabled = true
+    }
+
     private fun enableTestLibrary() {
         testLibrary.setEnabled()
         testLibrary.setOnClickListener {
-            testLibrary.setText("Hello")
-            //viewModel.get25BIT { enableGetBIT() }
+            val methodResult : String = when (selectMethod.selectedItem.toString()) {
+                "Method 1" -> "Result 1"
+                "Method 2" -> "Result 2"
+                else -> {
+                    "Other result"
+                }
+            }
+            val duration = Toast.LENGTH_LONG
+            val toast = Toast.makeText(context, methodResult, duration)
+            toast.setGravity(Gravity.CENTER, 0, 0)
+            toast.show()
         }
+        enableSpinner()
     }
 
     private fun setupStartMiningButton() {
@@ -193,7 +216,9 @@ class HomeFragment : Fragment(), CoroutineScope {
 
                         if (status.name == "STOPPED" && isMining) {
                             isMining = false
+                            //TODO these two methods should always be called as one
                             setupStartMiningButton()
+                            enableTestLibrary()
                         }
                     }
                 })

@@ -27,15 +27,6 @@ open class BalanceViewModel(
     protected val tokensBalanceRepo: TokensBalanceLiveDataRepository
 ) : ViewModel() {
 
-//    open fun observeBalanceList(
-//        owner: LifecycleOwner,
-//        observer: Observer<List<TokenBalance>>,
-//        requestListener: BalanceRequestListener? = null
-//    ) {
-//        tokensBalanceRepo.observeBalanceList(owner, observer)
-//        getTokensBalanceList(requestListener)
-//    }
-
     open fun clearObserver(owner: LifecycleOwner) = tokensBalanceRepo.clearObserver(owner)
 
     fun getAvailableBalance(): String = tokensBalanceRepo.getAvailableBalance(BuildConfig.TOKEN)

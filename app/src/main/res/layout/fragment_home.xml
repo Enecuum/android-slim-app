@@ -44,6 +44,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <Spinner
+            android:id="@+id/selectMethod"
+            style="@style/ButtonMedium"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@id/testLibrary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="#d0d0d0" />
+
     <com.enecuum.app.vvm.common.TextButton
         android:id="@+id/testLibrary"
         style="@style/ButtonMedium"
