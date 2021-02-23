@@ -148,9 +148,11 @@ class HomeFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private var listOfMethods = arrayOf("Available balance", "Sum balance")
+
     private fun enableSpinner() {
-        var listOfItems = arrayOf("Method 1", "Method 2", "Method 3")
-        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, listOfItems)
+
+        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, listOfMethods)
 
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         selectMethod!!.adapter = arrayAdapter
@@ -161,10 +163,10 @@ class HomeFragment : Fragment(), CoroutineScope {
         testLibrary.setEnabled()
         testLibrary.setOnClickListener {
             val methodResult : String = when (selectMethod.selectedItem.toString()) {
-                "Method 1" -> "Result 1"
-                "Method 2" -> "Result 2"
+                listOfMethods[0] -> viewModel.getAvailableBalance()
+                listOfMethods[1] -> viewModel.getSumBalance()
                 else -> {
-                    "Other result"
+                    "Unknown method"
                 }
             }
             val duration = Toast.LENGTH_LONG
