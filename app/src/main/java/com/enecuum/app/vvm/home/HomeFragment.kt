@@ -16,16 +16,17 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import com.enecuum.app.BuildConfig
 import com.enecuum.app.R
-import com.enecuum.lib.KeyStore
 import com.enecuum.app.extensions.hideProgress
 import com.enecuum.app.extensions.showProgress
 import com.enecuum.app.service.DateService
 import com.enecuum.app.utils.AmountValue
 import com.enecuum.app.utils.Constants
-import com.enecuum.lib.SageSign
 import com.enecuum.app.vvm.common.TextButton
+import com.enecuum.lib.KeyStore
+import com.enecuum.lib.SageSign
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.pixplicity.easyprefs.library.Prefs
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -35,6 +36,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.getViewModel
 import kotlin.coroutines.CoroutineContext
+import com.enecuum.app.vvm.home.HomeFragment.LibraryMethod as LibraryMethod1
 
 class HomeFragment : Fragment(), CoroutineScope {
 
@@ -67,9 +69,9 @@ class HomeFragment : Fragment(), CoroutineScope {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_home, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -103,8 +105,7 @@ class HomeFragment : Fragment(), CoroutineScope {
                 enableCheckBalance()
                 viewModel.getDetailedBalance()
                 enableGetBIT()
-                setupStartMiningButton()
-                enableTestLibrary()
+                libraryConnected()
             }
         }
     }
@@ -125,8 +126,7 @@ class HomeFragment : Fragment(), CoroutineScope {
 
             enableCheckBalance()
             enableGetBIT()
-            setupStartMiningButton()
-            enableTestLibrary()
+            libraryConnected()
 
             rootLayout.hideProgress()
         }
@@ -148,12 +148,31 @@ class HomeFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private var listOfMethods = arrayOf("Available balance", "Sum balance")
+    private enum class LibraryMethod {
+        AVAILABLE_BALANCE() {
+            override fun getCalculatedValue(viewModel : HomeViewModel): String {
+                return viewModel.getAvailableBalance()
+            }
+
+            override fun toString(): String {
+                return "Available balance"
+            }
+        }, SUM_BALANCE {
+            override fun getCalculatedValue(viewModel : HomeViewModel): String {
+                return viewModel.getSumBalance()
+            }
+
+            override fun toString(): String {
+                return "Summary balance"
+            }
+        };
+
+        abstract fun getCalculatedValue(viewModel : HomeViewModel): String
+    }
 
     private fun enableSpinner() {
 
-        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, listOfMethods)
-
+        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, LibraryMethod.values())
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         selectMethod!!.adapter = arrayAdapter
         selectMethod.isEnabled = true
@@ -162,15 +181,8 @@ class HomeFragment : Fragment(), CoroutineScope {
     private fun enableTestLibrary() {
         testLibrary.setEnabled()
         testLibrary.setOnClickListener {
-            val methodResult : String = when (selectMethod.selectedItem.toString()) {
-                listOfMethods[0] -> viewModel.getAvailableBalance()
-                listOfMethods[1] -> viewModel.getSumBalance()
-                else -> {
-                    "Unknown method"
-                }
-            }
-            val duration = Toast.LENGTH_LONG
-            val toast = Toast.makeText(context, methodResult, duration)
+            val methodResult = (selectMethod.selectedItem as LibraryMethod).getCalculatedValue(viewModel)
+            val toast = Toast.makeText(context, methodResult, Toast.LENGTH_LONG)
             toast.setGravity(Gravity.CENTER, 0, 0)
             toast.show()
         }
@@ -218,9 +230,7 @@ class HomeFragment : Fragment(), CoroutineScope {
 
                         if (status.name == "STOPPED" && isMining) {
                             isMining = false
-                            //TODO these two methods should always be called as one
-                            setupStartMiningButton()
-                            enableTestLibrary()
+                            libraryConnected()
                         }
                     }
                 })
@@ -230,6 +240,11 @@ class HomeFragment : Fragment(), CoroutineScope {
         override fun onServiceDisconnected(name: ComponentName) {
             dateService = null
         }
+    }
+
+    private fun libraryConnected() {
+        setupStartMiningButton()
+        enableTestLibrary()
     }
 
     private fun startService() {
@@ -250,9 +265,9 @@ class HomeFragment : Fragment(), CoroutineScope {
 
     private fun bindService() {
         activity?.bindService(
-            Intent(context, DateService::class.java),
-            connection,
-            Context.BIND_AUTO_CREATE
+                Intent(context, DateService::class.java),
+                connection,
+                Context.BIND_AUTO_CREATE
         )
         isServiceBound = true
     }
