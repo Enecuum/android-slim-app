@@ -155,7 +155,7 @@ class HomeFragment : Fragment(), CoroutineScope {
             }
 
             override fun setPrettyName(context: Context) {
-                prettyName = context.getString(R.string.run_method)
+                prettyName = context.getString(R.string.aviable_balance)
             }
 
             override fun toString(): String {
@@ -171,7 +171,7 @@ class HomeFragment : Fragment(), CoroutineScope {
             }
 
             override fun setPrettyName(context: Context) {
-                prettyName = context.getString(R.string.about)
+                prettyName = context.getString(R.string.summary_balance)
             }
         };
 
