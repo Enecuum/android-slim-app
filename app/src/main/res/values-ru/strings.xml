@@ -263,5 +263,7 @@
     <string name="faq_guides_title">Руководства</string>
     <string name="save">Сохранить</string>
     <string name="operation">Операция</string>
+    <string name="aviable_balance">Доступный баланс</string>
+    <string name="summary_balance">Суммарный баланс</string>
 
 </resources>

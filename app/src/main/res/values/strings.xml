@@ -397,6 +397,8 @@
     <string name="faq_guides"><![CDATA[To find out more, please read the <u><a href="https://guides.enecuum.com/faq.html">FAQ section</a></u> of Enecuum User Guides.]]></string>
 
     <string name="get_bit">Get 25 BIT</string>
-    <string name="testLibrary">Run method</string>
+    <string name="run_method">Run library method</string>
+    <string name="aviable_balance">Aviable balance</string>
+    <string name="summary_balance">Summary balance</string>
 
 </resources>

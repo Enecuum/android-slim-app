@@ -250,5 +250,7 @@
     <string name="buy">Comprar</string>
     <string name="faq_guides_title">Guías de usuario</string>
     <string name="faq_guides"><![CDATA[Para obtener más información, por favor lea la <u> <a href="https://guides.enecuum.com/faq.html"> sección de preguntas frecuentes </a> </ u> de guías de usuario Enecuum.]]></string>
+    <string name="aviable_balance">Saldo disponible</string>
+    <string name="summary_balance">"Balance total "</string>
 
 </resources>

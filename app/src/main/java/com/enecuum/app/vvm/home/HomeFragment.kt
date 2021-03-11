@@ -1,5 +1,6 @@
 package com.enecuum.app.vvm.home
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -16,7 +17,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import com.enecuum.app.BuildConfig
 import com.enecuum.app.R
 import com.enecuum.app.extensions.hideProgress
@@ -25,6 +25,7 @@ import com.enecuum.app.service.DateService
 import com.enecuum.app.utils.AmountValue
 import com.enecuum.app.utils.Constants
 import com.enecuum.app.vvm.common.TextButton
+import com.enecuum.app.vvm.host.MainActivity
 import com.enecuum.lib.KeyStore
 import com.enecuum.lib.SageSign
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -36,7 +37,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.getViewModel
 import kotlin.coroutines.CoroutineContext
-import com.enecuum.app.vvm.home.HomeFragment.LibraryMethod as LibraryMethod1
 
 class HomeFragment : Fragment(), CoroutineScope {
 
@@ -75,7 +75,7 @@ class HomeFragment : Fragment(), CoroutineScope {
     ): View? = inflater.inflate(R.layout.fragment_home, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        testLibrary.configure(R.string.testLibrary, backStyle = TextButton.BackStyle.GRAY_DISABLED, allCaps = true)
+        runLibraryMethod.configure(R.string.run_method, backStyle = TextButton.BackStyle.GRAY_DISABLED, allCaps = true)
         balance.configure(R.string.balance, backStyle = TextButton.BackStyle.GRAY_DISABLED, allCaps = true)
         getBIT.configure(R.string.get_bit, backStyle = TextButton.BackStyle.GRAY_DISABLED, allCaps = true)
         mining.configure(R.string.tab_mining, backStyle = TextButton.BackStyle.GRAY_DISABLED, allCaps = true)
@@ -148,30 +148,41 @@ class HomeFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private enum class LibraryMethod {
+    private enum class LibraryMethod() {
         AVAILABLE_BALANCE() {
             override fun getCalculatedValue(viewModel : HomeViewModel): String {
                 return viewModel.getAvailableBalance()
             }
 
-            override fun toString(): String {
-                return "Available balance"
+            override fun setPrettyName(context: Context) {
+                prettyName = context.getString(R.string.run_method)
             }
-        }, SUM_BALANCE {
+
+            override fun toString(): String {
+                return prettyName
+            }
+        }, SUM_BALANCE() {
             override fun getCalculatedValue(viewModel : HomeViewModel): String {
                 return viewModel.getSumBalance()
             }
 
             override fun toString(): String {
-                return "Summary balance"
+                return prettyName
+            }
+
+            override fun setPrettyName(context: Context) {
+                prettyName = context.getString(R.string.about)
             }
         };
 
+        var prettyName = super.toString()
         abstract fun getCalculatedValue(viewModel : HomeViewModel): String
+        abstract fun setPrettyName(context : Context)
     }
 
     private fun enableSpinner() {
-
+        for (method in LibraryMethod.values())
+            activity?.let { method.setPrettyName(it) }
         val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, LibraryMethod.values())
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         selectMethod!!.adapter = arrayAdapter
@@ -179,8 +190,8 @@ class HomeFragment : Fragment(), CoroutineScope {
     }
 
     private fun enableTestLibrary() {
-        testLibrary.setEnabled()
-        testLibrary.setOnClickListener {
+        runLibraryMethod.setEnabled()
+        runLibraryMethod.setOnClickListener {
             val methodResult = (selectMethod.selectedItem as LibraryMethod).getCalculatedValue(viewModel)
             val toast = Toast.makeText(context, methodResult, Toast.LENGTH_LONG)
             toast.setGravity(Gravity.CENTER, 0, 0)
