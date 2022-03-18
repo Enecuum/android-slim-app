@@ -35,7 +35,7 @@ android {
         buildConfigField "String", "DEFAULT_REFERRAL", "\"\""
         buildConfigField "boolean", "SHOW_PURCHASE_SCREEN", "Boolean.parseBoolean(\"false\")"
         buildConfigField "int", "TRINITY_VERSION", "4"
-        buildConfigField "boolean", "SKIP_VERIFICATION", "Boolean.parseBoolean(\"false\")"
+        buildConfigField "boolean", "SKIP_VERIFICATION", "Boolean.parseBoolean(\"true\")"
     }
     signingConfigs {
         release {
