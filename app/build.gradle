@@ -31,7 +31,7 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "TICKER", "\"BIT\""
-        buildConfigField "String", "TOKEN", "\"0000000000000000000000000000000000000000000000000000000000000000\""
+        buildConfigField "String", "TOKEN", "\"0000000000000000000000000000000000000000000000000000000000000001\""
         buildConfigField "String", "DEFAULT_REFERRAL", "\"\""
         buildConfigField "boolean", "SHOW_PURCHASE_SCREEN", "Boolean.parseBoolean(\"false\")"
         buildConfigField "int", "TRINITY_VERSION", "4"
